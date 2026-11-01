@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="UTF-8">
+  <title>flex 实验</title>
+  <style>
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: sans-serif;
+      padding: 16px;
+    }
+
+    .row {
+      border: 1px dashed #bbb;
+      margin-bottom: 24px;
+      padding: 12px;
+      height: 120px;
+      /* 为了看垂直居中 */
+    }
+
+    .item {
+      width: 60px;
+      height: 60px;
+      background: #4a90d9;
+      color: #fff;
+      text-align: center;
+      line-height: 60px;
+    }
+
+    #r1 {
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      height: 120px;
+      border: 1px dashed #bbb;
+      padding: 12px;
+      flex-direction: column;
+    }
+
+    #r2 {
+      display: flex;
+      justify-content: space-between;
+      height: 120px;
+    }
+
+    #r3 {
+      display: flex;
+    }
+
+    #r3.item {
+      flex: 1;
+    }
+
+    #r4 {
+      display: flex;
+      justify-content: space-between;
+    }
+
+    #r5 {
+      display: flex;
+      flex-wrap: wrap;
+    }
+
+    #r5.item {
+      flex: 0 0 120px;
+    }
+  </style>
+</head>
+
+<body>
+
+  <h3>① 居中</h3>
+  <div class="row" id="r1">
+    <div class="item">1</div>
+  </div>
+
+  <h3>② 横排</h3>
+  <div class="row" id="r2">
+    <div class="item">1</div>
+    <div class="item">2</div>
+    <div class="item">3</div>
+  </div>
+
+  <h3>③ 均分</h3>
+  <div class="row" id="r3">
+    <div class="item">1</div>
+    <div class="item">2</div>
+    <div class="item">3</div>
+  </div>
+
+  <h3>④ 两端对齐</h3>
+  <div class="row" id="r4">
+    <div class="item">1</div>
+    <div class="item">2</div>
+    <div class="item">3</div>
+  </div>
+
+  <h3>⑤ 换行</h3>
+  <div class="row" id="r5">
+    <div class="item">1</div>
+    <div class="item">2</div>
+    <div class="item">3</div>
+    <div class="item">4</div>
+    <div class="item">5</div>
+    <div class="item">6</div>
+    <div class="item">7</div>
+    <div class="item">8</div>
+  </div>
+
+</body>
+
+</html>

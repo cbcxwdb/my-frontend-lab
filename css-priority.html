@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="UTF-8">
+  <title>优先级实验</title>
+  <style>
+    p {
+      color: red;
+    }
+
+    .text {
+      color: blue;
+    }
+
+    #intro {
+      color: green;
+    }
+
+    /* p {
+      color: red !important;
+    } */
+
+    /* .text {
+      color: blue;
+    }
+
+    .text {
+      color: orange;
+    } */
+  </style>
+</head>
+
+<body>
+  <p class="text" id="intro">这句话是什么颜色？</p>
+  <p class="text" id="intro" style="color: purple">这句话是什么颜色？</p>
+</body>
+
+</html>
