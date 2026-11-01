@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>事件练习</title>
+  <style>
+    .active {
+      background: yellow;
+    }
+  </style>
+</head>
+
+<body>
+  <ul id="box"></ul>
+  <script>
+    const box = document.querySelector('#box');
+    const skills = ['HTML', 'CSS', 'JavaScript'];
+
+    function renderList(container, items) {
+      container.replaceChildren();
+
+      for (let i = 0; i < items.length; i++) {
+        const li = document.createElement('li');
+        li.textContent = (i + 1) + '. ' + items[i];
+
+        li.addEventListener('click', function () {
+          const all = container.querySelectorAll('li');
+
+          all.forEach(function (x) {
+            x.classList.remove('active');
+          })
+
+          li.classList.add('active');
+        });
+
+        container.appendChild(li);
+      }
+    }
+
+    renderList(box, skills);
+  </script>
+</body>
+
+</html>

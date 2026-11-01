@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+
+<body>
+  <ul id="box"></ul>
+  <script>
+    function renderList(container, items) {
+      container.replaceChildren();
+
+      for (let i = 0; i < items.length; i++) {
+        const li = document.createElement('li');
+        li.textContent = (i + 1) + '.' + items[i];
+        container.appendChild(li);
+      }
+    }
+
+    const box = document.querySelector('#box');
+    renderList(box, [1, 4, 9, 16, 25]);
+  </script>
+</body>
+
+
+
+
+</html>

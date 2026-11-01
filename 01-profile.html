@@ -10,13 +10,11 @@
 
 <body>
   <div class="card">
-    <!-- 占位头像：用 emoji 代替图片，方便学习 -->
+
     <div class="avatar" title="我的头像">🧑‍💻</div>
 
-    <!-- 你的名字 -->
     <h1 class="name">lhh</h1>
 
-    <!-- 一句话简介 -->
     <p class="intro">计算机科学与技术的专升本在读学生
       正在从新学习前端开发，并与ai结合使用，
       路线是HTML/CSS/JS->React->node.js
@@ -24,15 +22,14 @@
     </p>
     <div class="skills">
       <h2>我的技能树</h2>
-      <ul>
+      <ul class="skills-list">
       </ul>
     </div>
-    <!-- 按钮 -->
+
     <button class="btn">点我看看</button>
   </div>
   <script>
     (function () {
-      // 适合暗色主题页面的精选配色
       var colors = [
         '#1a1a2e', // 深海蓝
         '#16213e', // 午夜蓝
@@ -53,12 +50,26 @@
     })();
 
     const mySkills = ["HTML", "CSS", "JavaScript", "AI 工具应用", "React"];
-    const ulElement = document.querySelector('.skills ul');
-    mySkills.forEach(skill => {
-      const li = document.createElement('li');
-      li.textContent = skill;
-      ulElement.appendChild(li);
-    });
+
+    function renderSkills(list) {
+      const ul = document.querySelector('.skills-list');
+      if (!ul) return;
+      ul.replaceChildren();
+
+      const frag = document.createDocumentFragment();
+
+      list.forEach(function (skill) {
+        const li = document.createElement('li');
+        li.textContent = skill;
+        frag.appendChild(li);
+      });
+      ul.appendChild(frag);
+    }
+    renderSkills(mySkills);
+
+    mySkills.push("React");
+    renderSkills(mySkills);
+
   </script>
 </body>
 
