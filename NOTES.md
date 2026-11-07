@@ -196,6 +196,24 @@ li.innerHTML   = '<img src=x onerror=alert(1)>';  // 弹出窗口！
 | `el.classList.remove('x')` | 删 class |
 | `el.classList.toggle('x')` | 切换（有就删，没有就加） |
 
+### 异步
+
+| API | 作用 |
+|---|---|
+| `fetch(url)` | 发请求，返回 Promise（**不是数据**） |
+| `res.json()` | 把响应体解析成 JS 对象，**也返回 Promise**（所以要第二个 await） |
+| `await` | 等 Promise 完成再往下走；只能写在 `async` 函数里 |
+| `async function` | 声明可写 await 的函数，它自己也返回 Promise |
+| `try { } catch (err) { }` | 接住 await 的失败，避免页面永远卡在"加载中" |
+| `new Promise(r => setTimeout(r, ms))` | 伪造延时，用来观察"加载中"的过程 |
+
+**要点**
+- `fetch` 返回的是「取餐号」，不是奶茶
+- **两个 await 缺一不可**：漏第一个会报错；漏第二个**不报错但结果是 undefined**
+- `await` 暂停的是**这个函数**，不是整个页面
+- async 函数里的错误会变成「Promise 被拒绝」，报错显示为 `Uncaught (in promise)`
+- 加 `try/catch` 后，**代码写错也会被 catch 住**，显示成"加载失败"——别被误导，要看 catch 里的 `err`
+
 ---
 
 ## 6. 每日记录
