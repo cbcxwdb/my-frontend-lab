@@ -15,10 +15,13 @@
 </head>
 
 <body>
+  <input id="newTodo" placeholder="请输入代办">
+  <button id="addBtn">添加</button>
   <ul id="box"></ul>
   <button id="All">全部</button>
   <button id="Todo">未完成</button>
   <button id="Done">已完成</button>
+
   <script type="module">//这个脚本是模块
     import { renderList } from './render.js'
 
@@ -26,18 +29,32 @@
     const btnAll = document.querySelector('#All');
     const btnTodo = document.querySelector('#Todo');
     const btnDone = document.querySelector('#Done');
+    const newTodo = document.querySelector('#newTodo');
+    const addBtn = document.querySelector('#addBtn');
 
     let todos = [];
     let filter = 'all';
 
     function render() {
-      renderList(box, todos, filter, handleItemClick);
+      renderList(box, todos, filter, handleItemClick, handleDelete);
+    }
+
+    function save() {
+      localStorage.setItem('todos', JSON.stringify(todos));
     }
 
     async function loadTodos() {
+      const saved = localStorage.getItem('todos');
+      if (saved !== null) {
+        todos = JSON.parse(saved);
+        render();
+        return;
+      }
+
       try {
         const res = await fetch('todos.json');
         todos = await res.json();
+        save();
         render();
       } catch (err) {
         console.log('出错了:', err);
@@ -48,11 +65,32 @@
     function handleItemClick(item) {
       item.done = !item.done;
       render();
+      save();
     }
+
+    function handleDelete(item) {
+      const index = todos.indexOf(item);//查找这一条在第几个
+      if (index > -1) {
+        todos.splice(index, 1);//从index开始删除第一个
+      }
+      save()
+      render();
+    }
+
     btnAll.addEventListener('click', () => { filter = 'all'; render(); });
     btnTodo.addEventListener('click', () => { filter = 'todo'; render(); });
     btnDone.addEventListener('click', () => { filter = 'done'; render(); });
-
+    addBtn.addEventListener('click', () => {
+      const text = newTodo.value.trim();
+      if (text === '') {
+        alert('请输入正确的内容');
+        return;
+      }
+      todos.push({ title: text, done: false });
+      newTodo.value = '';
+      save();
+      render();
+    });
 
     loadTodos();
   </script>

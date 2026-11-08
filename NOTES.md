@@ -25,6 +25,7 @@
 | 10/31 | 变式：加序号 | `03-render-list-numbered.html` |
 | 11/01 | 事件：点击高亮（多选 → 单选） | `05-events-single.html` |
 | 11/01 | 造 4 个 bug 并归因 | `06-bug-lab.html` |
+| 11/08 | 待办应用全功能（筛选+添加+切换+删除+持久化）+ ES Module 拆分 | `04-todo.html` + `render.js` |
 
 ---
 
@@ -124,6 +125,23 @@ li.innerHTML   = '<img src=x onerror=alert(1)>';  // 弹出窗口！
 > **原则：默认用 `textContent`**，只有确定内容安全且确实需要富文本时才用 `innerHTML`。
 > **不可信来源**：用户输入、接口返回、**AI 模型输出**（提示词注入可以让模型吐出恶意 HTML）。
 
+**⑫ 事件冒泡：点子元素会触发父元素的监听**
+点 li 里的删除按钮 → 事件冒泡到 li → li 的 click 也触发（状态被误切换）
+→ 用 `e.stopPropagation()` 阻止冒泡
+
+**⑬ `textContent` 会清空所有子元素**
+`li.textContent = '文字'` 会**清空 li 里已有的东西**，再 append 按钮
+→ 如果先 append 按钮、再设 textContent，按钮会消失。**顺序很重要**
+
+**⑭ 模块里的变量在 Console 看不到**
+`<script type="module">` 有独立作用域，Console 面板运行在全局作用域
+→ 调试要在**代码里**写 `console.log()`，不是在 Console 里敲
+→ 临时想看：`window.todos = todos`（调试用，上线前删掉）
+
+**⑮ 拆模块后函数看不到外部变量**
+`render()` 原来直接用 `box`/`todos`/`filter`，搬进 render.js 后全部未定义
+→ 必须全部变成**参数**传进来
+
 ---
 
 ## 3. 排查清单
@@ -163,21 +181,17 @@ li.innerHTML   = '<img src=x onerror=alert(1)>';  // 弹出窗口！
 ---
 
 ## 4. 待学清单
-
-- [ ] **异步**：Promise / `await` / `fetch` —— 为什么 `fetch` 要 `await`
-- [ ] **`var` vs `let`**：函数作用域 vs 块级作用域
-      线索：事件回调里能用 `li`，因为循环里用 `let` 每轮新建；换成 `var` 会全部指向最后一个
-- [ ] **`querySelectorAll` 与 `querySelector` 的区别**（全部 vs 第一个）
-- [ ] **匿名函数 / 箭头函数**（`function () {}` vs `() => {}`）
-- [ ] **`add` / `remove` / `toggle`** 的完整语义
-- [ ] **CSS 系统学习**：盒模型、选择器优先级、flex 布局
-
+- [ ] **`map` / `filter` 数组方法**（现在还在用 for 循环；写 React 必用）
+- [ ] **事件委托**（用父元素监听代替给每个子元素绑定）
+- [ ] `e.target` / `e.currentTarget` 的实际区别
+- [ ] `localStorage` 的容量限制和异常处理（比如隐私模式下会抛错）
 ---
 
 ## 5. API 速查
 
 ### 通用的
 |`() => {} `|叫箭头函数，是 function () {} 的简写。没有参数时写 ()，一个参数可以省略括号。
+|`.trim()	`|用户可能只打了空格，去掉首尾空格再判断
 
 ### DOM 渲染
 
@@ -217,6 +231,52 @@ li.innerHTML   = '<img src=x onerror=alert(1)>';  // 弹出窗口！
 - async 函数里的错误会变成「Promise 被拒绝」，报错显示为 `Uncaught (in promise)`
 - 加 `try/catch` 后，**代码写错也会被 catch 住**，显示成"加载失败"——别被误导，要看 catch 里的 `err`
 
+### ES Module（模块化）
+
+| 语法 | 作用 |
+|---|---|
+| `<script type="module">` | 声明这是模块脚本（**才能用 import/export**） |
+| `export function fn() {}` | 把函数暴露出去 |
+| `import { fn } from './file.js'` | 把函数拿进来 |
+
+**要点**
+- 路径必须写 `./`，不能写 `file.js`
+- 模块有**独立作用域**，变量不挂在 `window` 上（比喻：独立房间 vs 大通铺）
+- 所以 Console 面板里敲变量名会报 `is not defined`——**这是正常的**
+- 必须通过 http 访问（Live Server），`file://` 会跨域失败
+- **拆模块后，函数看不到外面的变量** → 必须全部变成参数传进来（降耦合）
+
+### 本地存储 localStorage
+
+| API | 作用 |
+|---|---|
+| `localStorage.setItem(key, value)` | 存（**只能存字符串**） |
+| `localStorage.getItem(key)` | 取（没有时返回 `null`） |
+| `localStorage.removeItem(key)` | 删 |
+| `JSON.stringify(对象)` | 对象 → 字符串（**存**时用） |
+| `JSON.parse(字符串)` | 字符串 → 对象（**取**时用） |
+
+**要点**
+- 只能存字符串，直接存对象会变成 `"[object Object]"`
+- 刷新/关浏览器都不丢，除非清缓存
+- **数据来源的优先级**：先看 localStorage 有没有 → 没有才去 `fetch` 种子数据
+
+### 数组与字符串方法
+
+| API | 作用 | 例子 |
+|---|---|---|
+| `arr.push(元素)` | 末尾添加 | `todos.push({ title, done: false })` |
+| `arr.indexOf(元素)` | 找位置，找不到返回 `-1` | `todos.indexOf(item)` |
+| `arr.splice(起点, 个数)` | 删除（**会改变原数组**） | `todos.splice(i, 1)` |
+| `str.trim()` | 去掉首尾空格 | `input.value.trim()` |
+
+### 事件进阶
+
+| API | 作用 |
+|---|---|
+| `e.stopPropagation()` | **阻止事件冒泡** |
+| `e.target` | 真正被点的那个元素 |
+| `e.currentTarget` | 绑定监听的那个元素 |
 ---
 
 ## 6. 每日记录
@@ -275,6 +335,28 @@ li.addEventListener('click', function () {
 | 注释掉"清场"整段 | 不会再有取消，点哪个亮哪个 | 如预期 | 那 4 行的作用就是"清场" |
 
 **今日最大收获**：`remove` → `add` 那题预测错了。原因是**没有在脑子里执行 `forEach`**——`forEach` 里的操作会对每个元素执行，效果要乘以 N。
+
+### 2026-11-08 · Phase A 收尾
+
+**完成**：待办应用全功能 + ES Module 拆分 + 本地持久化
+
+**架构**
+```
+04-todo.html  ← 状态 + 数据操作 + 接线
+render.js     ← 只负责"画"，通过回调参数通知外面
+                (onItemClick, onDelete)
+```
+
+**功能**
+筛选 / 添加（trim 判空）/ 切换状态 / 删除（×）/ 刷新不丢
+
+**新学**
+- ES Module：`type="module"` + `export` / `import` + 模块作用域
+- `localStorage` + `JSON.stringify` / `JSON.parse`
+- **事件冒泡** + `e.stopPropagation()`
+- 数组：`push` / `indexOf` / `splice`
+- 字符串：`trim`
+- `return` 提前退出（guard clause）：判空后直接 `return`，不套 if
 
 ## Phase A 复盘（2026.10.12 – 11.08）
 
