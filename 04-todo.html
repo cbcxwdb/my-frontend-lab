@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>代办筛选</title>
+  <link rel="icon" href="data:,">
+  <style>
+    .done {
+      text-decoration: line-through;
+      color: blue;
+    }
+  </style>
+</head>
+
+<body>
+  <ul id="box"></ul>
+  <button id="All">全部</button>
+  <button id="Todo">未完成</button>
+  <button id="Done">已完成</button>
+  <script type="module">//这个脚本是模块
+    import { renderList } from './render.js'
+
+    const box = document.querySelector('#box');
+    const btnAll = document.querySelector('#All');
+    const btnTodo = document.querySelector('#Todo');
+    const btnDone = document.querySelector('#Done');
+
+    let todos = [];
+    let filter = 'all';
+
+    function render() {
+      renderList(box, todos, filter, handleItemClick);
+    }
+
+    async function loadTodos() {
+      try {
+        const res = await fetch('todos.json');
+        todos = await res.json();
+        render();
+      } catch (err) {
+        console.log('出错了:', err);
+        box.textContent = '加载失败';
+      }
+    }
+
+    function handleItemClick(item) {
+      item.done = !item.done;
+      render();
+    }
+    btnAll.addEventListener('click', () => { filter = 'all'; render(); });
+    btnTodo.addEventListener('click', () => { filter = 'todo'; render(); });
+    btnDone.addEventListener('click', () => { filter = 'done'; render(); });
+
+
+    loadTodos();
+  </script>
+</body>
+
+</html>
